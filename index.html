@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>海尔空调合作款-小七·大图预览+话术搜索</title>
+    <title>海尔空调合作款-小七</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif; }
@@ -215,7 +215,6 @@
             margin-top: 36px; font-size: 0.8rem; color: #4a6080; text-align: center;
             border-top: 1px solid rgba(180, 200, 220, 0.6); padding-top: 26px;
         }
-        /* 大图模态框 */
         .image-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
@@ -231,7 +230,6 @@
             position: absolute; top: 20px; right: 30px; font-size: 2.5rem; color: white; cursor: pointer;
             background: none; border: none; transition: 0.2s;
         }
-        .image-modal-close:hover { transform: scale(1.2); }
         @media (max-width: 900px) {
             .layout { flex-direction: column; }
             .sidebar { flex: 1; position: static; max-height: none; width: 100%; }
@@ -316,12 +314,11 @@
         <div id="productGrid" class="product-grid"></div>
 
         <div class="footer-note">
-            <i class="fas fa-circle-info"></i> 数据基于真实合作 SKU · 点击链接跳转京东核对 · 支持多需求同时满足搜索 · 包含站外种草及团长权益 · 自定义话术及图片仅保存在本地浏览器 · 点击缩略图可查看大图
+            <i class="fas fa-circle-info"></i> 数据基于真实合作 SKU · 点击链接跳转京东核对 · 支持多需求同时满足搜索 · 包含站外种草及团长权益 · 自定义话术及图片自动保存在本地浏览器，刷新不丢失
         </div>
     </div>
 </div>
 
-<!-- 大图模态框 -->
 <div class="image-modal" id="imageModal">
     <button class="image-modal-close" id="modalClose">&times;</button>
     <img id="modalImage" src="" alt="大图预览">
@@ -364,211 +361,101 @@
         let currentSearch = '';
         let pendingImageData = null;
 
-        // 大图模态框控制
-        function openModal(src) {
-            modalImage.src = src;
-            imageModal.classList.add('active');
-        }
-        function closeModal() {
-            imageModal.classList.remove('active');
-            modalImage.src = '';
-        }
+        // 大图模态框
+        function openModal(src) { modalImage.src = src; imageModal.classList.add('active'); }
+        function closeModal() { imageModal.classList.remove('active'); modalImage.src = ''; }
         modalClose.addEventListener('click', closeModal);
-        imageModal.addEventListener('click', function(e) {
-            if (e.target === imageModal) closeModal();
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && imageModal.classList.contains('active')) closeModal();
-        });
+        imageModal.addEventListener('click', (e) => { if (e.target === imageModal) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && imageModal.classList.contains('active')) closeModal(); });
 
         // 侧边栏折叠
         toggleSidebar.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
-            const isCollapsed = sidebar.classList.contains('collapsed');
-            toggleSidebar.innerHTML = isCollapsed ? '<i class="fas fa-chevron-right"></i> 展开' : '<i class="fas fa-chevron-left"></i> 收起';
+            const collapsed = sidebar.classList.contains('collapsed');
+            toggleSidebar.innerHTML = collapsed ? '<i class="fas fa-chevron-right"></i> 展开' : '<i class="fas fa-chevron-left"></i> 收起';
+            localStorage.setItem('haier_sidebar_collapsed', collapsed ? '1' : '0');
         });
 
-        // 图片上传处理
+        // 图片上传
         imageUploadBtn.addEventListener('click', () => imageFileInput.click());
         imageFileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+            const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
-            reader.onload = (ev) => {
-                pendingImageData = ev.target.result;
-                imagePreview.src = pendingImageData;
-                imagePreview.style.display = 'block';
-                removeImageBtn.style.display = 'inline-flex';
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
+            reader.onload = (ev) => { pendingImageData = ev.target.result; imagePreview.src = pendingImageData; imagePreview.style.display = 'block'; removeImageBtn.style.display = 'inline-flex'; };
+            reader.readAsDataURL(file); e.target.value = '';
         });
-        removeImageBtn.addEventListener('click', () => {
-            pendingImageData = null;
-            imagePreview.src = '';
-            imagePreview.style.display = 'none';
-            removeImageBtn.style.display = 'none';
-        });
+        removeImageBtn.addEventListener('click', () => { pendingImageData = null; imagePreview.src=''; imagePreview.style.display='none'; removeImageBtn.style.display='none'; });
 
-        // 本地存储话术库
-        const STORAGE_KEY = 'haier_custom_qa_image_v3';
-        function getCustomQa() {
-            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
-        }
-        function setCustomQa(qaArray) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(qaArray));
-            renderCustomQa();
-        }
+        // 自动本地存储话术库
+        const STORAGE_KEY = 'haier_custom_qa_auto_v1';
+        function getCustomQa() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; } }
+        function setCustomQa(qaArray) { localStorage.setItem(STORAGE_KEY, JSON.stringify(qaArray)); renderCustomQa(); }
         function renderCustomQa() {
             const qaArray = getCustomQa();
             const searchTerm = qaSearchInput.value.trim().toLowerCase();
-            const filtered = searchTerm ? qaArray.filter(item => 
-                item.question.toLowerCase().includes(searchTerm) || item.answer.toLowerCase().includes(searchTerm)
-            ) : qaArray;
-            if (filtered.length === 0) {
-                qaList.innerHTML = '<div style="color:#7a8fa8; font-size:0.85rem;">暂无匹配话术</div>';
-                return;
-            }
+            const filtered = searchTerm ? qaArray.filter(i => i.question.toLowerCase().includes(searchTerm) || i.answer.toLowerCase().includes(searchTerm)) : qaArray;
+            if (filtered.length === 0) { qaList.innerHTML = '<div style="color:#7a8fa8; font-size:0.85rem;">暂无匹配话术</div>'; return; }
             let html = '';
-            filtered.forEach((item) => {
-                const originalIndex = qaArray.indexOf(item);
+            filtered.forEach(item => {
+                const idx = qaArray.indexOf(item);
                 const imageHtml = item.image ? `<img src="${item.image}" class="qa-image" data-full="${item.image}" alt="话术图片">` : '';
-                html += `
-                    <div class="qa-item">
-                        <div class="qa-content">
-                            <div class="qa-question"><i class="fas fa-question-circle" style="color:#0077ee; margin-right:6px;"></i>${item.question}</div>
-                            <div class="qa-answer"><i class="fas fa-reply" style="color:#00875a; margin-right:6px;"></i>${item.answer}</div>
-                            ${imageHtml}
-                        </div>
-                        <div class="qa-actions">
-                            <button class="delete-qa" data-index="${originalIndex}" title="删除"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                    </div>
-                `;
+                html += `<div class="qa-item"><div class="qa-content"><div class="qa-question"><i class="fas fa-question-circle" style="color:#0077ee;margin-right:6px;"></i>${item.question}</div><div class="qa-answer"><i class="fas fa-reply" style="color:#00875a;margin-right:6px;"></i>${item.answer}</div>${imageHtml}</div><div class="qa-actions"><button class="delete-qa" data-index="${idx}"><i class="fas fa-trash-alt"></i></button></div></div>`;
             });
             qaList.innerHTML = html;
-            qaList.querySelectorAll('.delete-qa').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const idx = parseInt(this.dataset.index);
-                    const qaArray = getCustomQa();
-                    qaArray.splice(idx, 1);
-                    setCustomQa(qaArray);
-                });
-            });
-            // 图片点击查看大图
-            qaList.querySelectorAll('.qa-image').forEach(img => {
-                img.addEventListener('click', function() {
-                    openModal(this.dataset.full || this.src);
-                });
-            });
+            qaList.querySelectorAll('.delete-qa').forEach(btn => btn.addEventListener('click', function() {
+                const idx = parseInt(this.dataset.index); const arr = getCustomQa(); arr.splice(idx,1); setCustomQa(arr);
+            }));
+            qaList.querySelectorAll('.qa-image').forEach(img => img.addEventListener('click', function() { openModal(this.dataset.full || this.src); }));
         }
         function addCustomQa() {
-            const question = newQuestion.value.trim();
-            const answer = newAnswer.value.trim();
-            if (!question || !answer) { alert('请同时填写问题和回复话术'); return; }
-            const qaArray = getCustomQa();
-            const newItem = { question, answer };
-            if (pendingImageData) newItem.image = pendingImageData;
-            qaArray.push(newItem);
-            setCustomQa(qaArray);
-            newQuestion.value = '';
-            newAnswer.value = '';
-            pendingImageData = null;
-            imagePreview.src = '';
-            imagePreview.style.display = 'none';
-            removeImageBtn.style.display = 'none';
+            const q = newQuestion.value.trim(); const a = newAnswer.value.trim();
+            if(!q || !a) { alert('请填写问题和回复'); return; }
+            const arr = getCustomQa(); const item = { question: q, answer: a };
+            if(pendingImageData) item.image = pendingImageData;
+            arr.push(item); setCustomQa(arr);
+            newQuestion.value=''; newAnswer.value=''; pendingImageData=null; imagePreview.src=''; imagePreview.style.display='none'; removeImageBtn.style.display='none';
         }
         function exportCustomQa() {
-            const qaArray = getCustomQa();
-            if (!qaArray.length) { alert('暂无可导出的自定义话术'); return; }
-            const blob = new Blob([JSON.stringify(qaArray, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = `海尔话术_${new Date().toISOString().slice(0,10)}.json`;
-            a.click(); URL.revokeObjectURL(url);
+            const arr = getCustomQa(); if(!arr.length) { alert('暂无话术'); return; }
+            const blob = new Blob([JSON.stringify(arr, null, 2)], {type:'application/json'});
+            const url = URL.createObjectURL(blob); const a = document.createElement('a');
+            a.href=url; a.download=`海尔话术_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
         }
         function importCustomQa(file) {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (!Array.isArray(data)) throw new Error();
-                    setCustomQa([...getCustomQa(), ...data]);
-                    alert(`成功导入 ${data.length} 条话术`);
-                } catch { alert('导入失败：文件格式错误'); }
-            };
+            reader.onload = e => { try { const data = JSON.parse(e.target.result); if(!Array.isArray(data)) throw new Error(); setCustomQa([...getCustomQa(), ...data]); alert(`成功导入 ${data.length} 条`); } catch { alert('导入失败'); } };
             reader.readAsText(file);
         }
 
         // 产品搜索渲染
-        const demandKeywords = {
-            "省电": ["省电", "节能", "AI省电", "超省电", "能效", "省电率"],
-            "不直吹": ["不直吹", "防直吹", "风避人", "人感控风", "AI人感", "柔风"],
-            "除菌": ["除菌", "除甲醛", "净化", "离子", "母婴", "净护", "UVC"],
-            "儿童房": ["儿童", "母婴", "防直吹", "柔风", "静音", "低噪"],
-            "大客厅": ["大3匹", "3匹", "柜机", "大风量", "长距离", "广角", "大挂机"],
-            "静音": ["静音", "16分贝", "低噪", "安静", "轻音"],
-            "自清洁": ["自清洁", "智清洁", "任意洗", "56℃", "结霜化霜"],
-            "智能控制": ["智能", "语音", "wifi", "离线语音", "AI智控", "人感", "APP"],
-            "性价比": ["统帅", "超省电", "性价比", "风管机", "一拖一", "实惠"]
-        };
-        function parseSearchTerms(query) {
-            if (!query.trim()) return [];
-            return query.replace(/[、，,;；\s]+/g, ' ').trim().toLowerCase().split(' ').filter(t => t);
-        }
-        function doesMatchAll(p, terms) {
-            const name = p.name.toLowerCase(), model = p.model.toLowerCase(), feat = p.features.toLowerCase(), sku = p.sku.toLowerCase();
-            return terms.every(term => {
-                if (name.includes(term) || model.includes(term) || feat.includes(term) || sku.includes(term)) return true;
-                for (const [demand, kws] of Object.entries(demandKeywords)) {
-                    if (demand.toLowerCase().includes(term) || term.includes(demand.toLowerCase()) || kws.some(k => term.includes(k.toLowerCase()))) {
-                        if (kws.some(k => feat.includes(k.toLowerCase()) || name.includes(k.toLowerCase()))) return true;
-                    }
-                }
-                return false;
-            });
-        }
+        const demandKeywords = { "省电": ["省电","节能","AI省电","超省电","能效","省电率"], "不直吹": ["不直吹","防直吹","风避人","人感控风","AI人感","柔风"], "除菌": ["除菌","除甲醛","净化","离子","母婴","净护","UVC"], "儿童房": ["儿童","母婴","防直吹","柔风","静音","低噪"], "大客厅": ["大3匹","3匹","柜机","大风量","长距离","广角","大挂机"], "静音": ["静音","16分贝","低噪","安静","轻音"], "自清洁": ["自清洁","智清洁","任意洗","56℃","结霜化霜"], "智能控制": ["智能","语音","wifi","离线语音","AI智控","人感","APP"], "性价比": ["统帅","超省电","性价比","风管机","一拖一","实惠"] };
+        function parseSearchTerms(q) { if(!q.trim()) return []; return q.replace(/[、，,;；\s]+/g,' ').trim().toLowerCase().split(' ').filter(t=>t); }
+        function doesMatchAll(p, terms) { const n=p.name.toLowerCase(), m=p.model.toLowerCase(), f=p.features.toLowerCase(), s=p.sku.toLowerCase(); return terms.every(term => { if(n.includes(term)||m.includes(term)||f.includes(term)||s.includes(term)) return true; for(const [demand,kws] of Object.entries(demandKeywords)){ if(demand.toLowerCase().includes(term)||term.includes(demand.toLowerCase())||kws.some(k=>term.includes(k.toLowerCase()))){ if(kws.some(k=>f.includes(k.toLowerCase())||n.includes(k.toLowerCase()))) return true; } } return false; }); }
         function renderProducts() {
             const terms = parseSearchTerms(currentSearch);
-            const filtered = products.filter(p => (currentSeries === 'all' || p.series === currentSeries) && (terms.length === 0 || doesMatchAll(p, terms)));
-            if (!filtered.length) {
-                grid.innerHTML = `<div class="no-result"><i class="fas fa-search" style="font-size:2.5rem;opacity:0.5;"></i><br><br>没有同时满足所有条件的产品</div>`;
-                return;
-            }
-            let html = '';
-            filtered.forEach(p => {
-                const comm = p.commission || '—';
-                const link = p.link && p.link !== '/' ? p.link : '#';
-                const target = link !== '#' ? ' target="_blank" rel="noopener"' : '';
-                const benefits = (p.seed || p.leader || p.cross) ? `<div class="benefits-box">${p.seed?`<span class="benefit-item"><i class="fas fa-seedling"></i>种草 ${p.seed}</span>`:''}${p.leader?`<span class="benefit-item"><i class="fas fa-user-check"></i>团长返 ${p.leader}</span>`:''}${p.cross?`<span class="benefit-item"><i class="fas fa-tags"></i>${p.cross}</span>`:''}</div>` : '';
-                const copyText = `${link}\n您点链接右上角点 打开app 跳转到京东app，核实一下是这款吗？`;
-                html += `<div class="product-card"><div class="card-badge"><span class="series-tag">${p.series}</span><span class="commission">${comm}</span></div><div class="product-name">${p.name}</div><div class="product-model">${p.model}</div><div class="core-features">${p.features}</div>${benefits}<div class="link-sku"><a href="${link}"${target}><i class="fas fa-external-link-alt"></i> 查看</a><button class="copy-btn" data-copy="${encodeURIComponent(copyText)}"><i class="fas fa-copy"></i> 复制</button><span class="sku-code">${p.sku}</span></div></div>`;
-            });
+            const filtered = products.filter(p => (currentSeries==='all' || p.series===currentSeries) && (terms.length===0 || doesMatchAll(p,terms)));
+            if(!filtered.length) { grid.innerHTML = `<div class="no-result"><i class="fas fa-search" style="font-size:2.5rem;opacity:0.5;"></i><br><br>没有同时满足所有条件的产品</div>`; return; }
+            let html=''; filtered.forEach(p=>{ const comm=p.commission||'—'; const link=p.link&&p.link!=='/'?p.link:'#'; const target=link!=='#'?' target="_blank" rel="noopener"':''; const benefits=(p.seed||p.leader||p.cross)?`<div class="benefits-box">${p.seed?`<span class="benefit-item"><i class="fas fa-seedling"></i>种草 ${p.seed}</span>`:''}${p.leader?`<span class="benefit-item"><i class="fas fa-user-check"></i>团长返 ${p.leader}</span>`:''}${p.cross?`<span class="benefit-item"><i class="fas fa-tags"></i>${p.cross}</span>`:''}</div>`:''; const copyText=`${link}\n您点链接右上角点 打开app 跳转到京东app，核实一下是这款吗？`; html+=`<div class="product-card"><div class="card-badge"><span class="series-tag">${p.series}</span><span class="commission">${comm}</span></div><div class="product-name">${p.name}</div><div class="product-model">${p.model}</div><div class="core-features">${p.features}</div>${benefits}<div class="link-sku"><a href="${link}"${target}><i class="fas fa-external-link-alt"></i> 查看</a><button class="copy-btn" data-copy="${encodeURIComponent(copyText)}"><i class="fas fa-copy"></i> 复制</button><span class="sku-code">${p.sku}</span></div></div>`; });
             grid.innerHTML = html;
-            grid.querySelectorAll('.copy-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    navigator.clipboard.writeText(decodeURIComponent(this.dataset.copy)).then(() => {
-                        this.innerHTML = '<i class="fas fa-check"></i> 已复制'; this.classList.add('copied');
-                        setTimeout(() => { this.innerHTML = '<i class="fas fa-copy"></i> 复制'; this.classList.remove('copied'); }, 1500);
-                    });
-                });
-            });
+            grid.querySelectorAll('.copy-btn').forEach(btn=>btn.addEventListener('click',function(){ navigator.clipboard.writeText(decodeURIComponent(this.dataset.copy)).then(()=>{ this.innerHTML='<i class="fas fa-check"></i> 已复制'; this.classList.add('copied'); setTimeout(()=>{ this.innerHTML='<i class="fas fa-copy"></i> 复制'; this.classList.remove('copied'); },1500); }); }));
         }
-        seriesTabs.addEventListener('click', e => {
-            const tab = e.target.closest('span'); if (!tab) return;
-            currentSeries = tab.dataset.series; updateTabs(); renderProducts();
-        });
-        function updateTabs() { seriesTabs.querySelectorAll('span').forEach(t => t.classList.toggle('active', t.dataset.series === currentSeries)); }
-        searchInput.addEventListener('input', () => { currentSearch = searchInput.value; renderProducts(); });
-        clearBtn.addEventListener('click', () => { searchInput.value=''; currentSearch=''; renderProducts(); });
-        demandTags.addEventListener('click', e => { const tag = e.target.closest('.tag'); if(tag){ searchInput.value=tag.dataset.demand; currentSearch=tag.dataset.demand; renderProducts(); } });
+        seriesTabs.addEventListener('click', e=>{ const tab=e.target.closest('span'); if(!tab) return; currentSeries=tab.dataset.series; seriesTabs.querySelectorAll('span').forEach(t=>t.classList.toggle('active', t.dataset.series===currentSeries)); renderProducts(); });
+        searchInput.addEventListener('input', ()=>{ currentSearch=searchInput.value; renderProducts(); });
+        clearBtn.addEventListener('click', ()=>{ searchInput.value=''; currentSearch=''; renderProducts(); });
+        demandTags.addEventListener('click', e=>{ const tag=e.target.closest('.tag'); if(tag){ searchInput.value=tag.dataset.demand; currentSearch=tag.dataset.demand; renderProducts(); } });
 
+        // 事件绑定
         addQaBtn.addEventListener('click', addCustomQa);
         exportBtn.addEventListener('click', exportCustomQa);
-        importBtn.addEventListener('click', () => importFile.click());
-        importFile.addEventListener('change', (e) => { if(e.target.files[0]) importCustomQa(e.target.files[0]); e.target.value=''; });
+        importBtn.addEventListener('click', ()=>importFile.click());
+        importFile.addEventListener('change', e=>{ if(e.target.files[0]) importCustomQa(e.target.files[0]); e.target.value=''; });
         qaSearchInput.addEventListener('input', renderCustomQa);
 
+        // 初始化：自动恢复侧边栏状态 & 渲染存储内容
+        if (localStorage.getItem('haier_sidebar_collapsed') === '1') {
+            sidebar.classList.add('collapsed');
+            toggleSidebar.innerHTML = '<i class="fas fa-chevron-right"></i> 展开';
+        }
         renderProducts();
         renderCustomQa();
     })();
