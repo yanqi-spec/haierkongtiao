@@ -7,237 +7,73 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif; }
-        body {
-            background: radial-gradient(circle at 10% 20%, #eef5ff, #e6ecf7);
-            min-height: 100vh; padding: 20px 16px 40px; position: relative; overflow-x: hidden;
-        }
-        body::before {
-            content: ''; position: fixed; top: -100px; left: -100px; width: 400px; height: 400px;
-            background: radial-gradient(circle, rgba(0, 80, 180, 0.15), transparent 70%);
-            border-radius: 50%; z-index: 0; pointer-events: none; animation: floatGlow 12s infinite alternate;
-        }
-        @keyframes floatGlow {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(50px, 30px) scale(1.1); }
-        }
-        .layout {
-            display: flex; gap: 24px; max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; align-items: flex-start;
-        }
-        .sidebar {
-            flex: 0 0 340px; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(20px);
-            border-radius: 28px; box-shadow: 0 15px 35px rgba(0,30,70,0.12), 0 0 0 1px rgba(255,255,255,0.9);
-            border: 1px solid rgba(255, 255, 255, 0.8); padding: 18px; position: sticky; top: 20px;
-            max-height: calc(100vh - 40px); overflow-y: auto; transition: all 0.3s ease;
-        }
+        body { background: radial-gradient(circle at 10% 20%, #eef5ff, #e6ecf7); min-height: 100vh; padding: 20px 16px 40px; position: relative; overflow-x: hidden; }
+        body::before { content: ''; position: fixed; top: -100px; left: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(0, 80, 180, 0.15), transparent 70%); border-radius: 50%; z-index: 0; pointer-events: none; animation: floatGlow 12s infinite alternate; }
+        @keyframes floatGlow { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 30px) scale(1.1); } }
+        .layout { display: flex; gap: 24px; max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; align-items: flex-start; }
+        .sidebar { flex: 0 0 340px; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(20px); border-radius: 28px; box-shadow: 0 15px 35px rgba(0,30,70,0.12); border: 1px solid rgba(255, 255, 255, 0.8); padding: 18px; position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow-y: auto; transition: all 0.3s ease; }
         .sidebar.collapsed { flex: 0 0 60px; padding: 14px 10px; overflow: hidden; }
         .sidebar.collapsed .sidebar-content { display: none; }
-        .sidebar.collapsed .toggle-btn { justify-content: center; }
-        .sidebar-header {
-            display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
-        }
-        .sidebar-header h2 {
-            font-size: 1.2rem; font-weight: 700; color: #0a2540; display: flex; align-items: center; gap: 8px;
-        }
-        .toggle-btn {
-            background: white; border: 1px solid #b8d2ff; border-radius: 20px; padding: 4px 10px;
-            cursor: pointer; color: #003c7e; font-size: 0.8rem; display: flex; align-items: center; gap: 4px;
-        }
-        .qa-search-wrap {
-            display: flex; align-items: center; background: rgba(255,255,255,0.8); border-radius: 20px;
-            padding: 4px 12px; margin-bottom: 12px; border: 1px solid #c8ddf5;
-        }
-        .qa-search-wrap i { color: #7a8fa8; font-size: 0.8rem; }
-        .qa-search-wrap input {
-            border: none; background: transparent; padding: 8px; flex: 1; outline: none; font-size: 0.85rem; color: #0b1f33;
-        }
+        .sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+        .sidebar-header h2 { font-size: 1.2rem; font-weight: 700; color: #0a2540; display: flex; align-items: center; gap: 8px; }
+        .toggle-btn { background: white; border: 1px solid #b8d2ff; border-radius: 20px; padding: 4px 10px; cursor: pointer; color: #003c7e; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; }
+        .qa-search-wrap { display: flex; align-items: center; background: rgba(255,255,255,0.8); border-radius: 20px; padding: 4px 12px; margin-bottom: 12px; border: 1px solid #c8ddf5; }
+        .qa-search-wrap input { border: none; background: transparent; padding: 8px; flex: 1; outline: none; font-size: 0.85rem; color: #0b1f33; }
         .qa-input-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
-        .qa-input-row input, .qa-input-row textarea {
-            width: 100%; padding: 10px 14px; border-radius: 16px; border: 1px solid #c8ddf5;
-            background: rgba(255,255,255,0.9); font-size: 0.85rem; outline: none; transition: 0.2s; font-family: inherit;
-        }
+        .qa-input-row input, .qa-input-row textarea { width: 100%; padding: 10px 14px; border-radius: 16px; border: 1px solid #c8ddf5; background: rgba(255,255,255,0.9); font-size: 0.85rem; outline: none; font-family: inherit; }
         .qa-input-row textarea { resize: vertical; min-height: 70px; }
         .image-upload-area { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .image-upload-btn {
-            background: white; border: 1px dashed #b8d2ff; border-radius: 16px; padding: 8px 16px;
-            cursor: pointer; color: #003c7e; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px;
-        }
-        .image-preview {
-            max-width: 70px; max-height: 70px; border-radius: 12px; object-fit: cover; display: none;
-            border: 1px solid #c8ddf5; cursor: pointer;
-        }
-        .remove-image-btn {
-            background: none; border: none; color: #c23535; cursor: pointer; font-size: 0.8rem;
-            display: none; align-items: center; gap: 4px;
-        }
-        .btn {
-            padding: 9px 16px; border-radius: 30px; border: none; font-weight: 600; cursor: pointer;
-            transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-            font-size: 0.8rem; background: white; color: #003c7e; border: 1px solid #b8d2ff;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #0044cc, #0080ff); color: white; border: none;
-            box-shadow: 0 4px 12px rgba(0,80,255,0.3);
-        }
+        .image-upload-btn { background: white; border: 1px dashed #b8d2ff; border-radius: 16px; padding: 8px 16px; cursor: pointer; color: #003c7e; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px; }
+        .image-preview { max-width: 70px; max-height: 70px; border-radius: 12px; object-fit: cover; display: none; border: 1px solid #c8ddf5; cursor: pointer; }
+        .remove-image-btn { background: none; border: none; color: #c23535; cursor: pointer; font-size: 0.8rem; display: none; align-items: center; gap: 4px; }
+        .btn { padding: 9px 16px; border-radius: 30px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.8rem; background: white; color: #003c7e; border: 1px solid #b8d2ff; }
+        .btn-primary { background: linear-gradient(135deg, #0044cc, #0080ff); color: white; border: none; box-shadow: 0 4px 12px rgba(0,80,255,0.3); }
         .btn-outline { background: white; border: 1px solid #b8d2ff; color: #003c7e; }
         .qa-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
-        .qa-item {
-            background: rgba(255,255,255,0.8); border-radius: 14px; padding: 10px 12px;
-            border: 1px solid #d8e6f8; display: flex; justify-content: space-between; gap: 8px;
-        }
-        .qa-item .qa-content { flex: 1; min-width: 0; }
+        .qa-item { background: rgba(255,255,255,0.8); border-radius: 14px; padding: 10px 12px; border: 1px solid #d8e6f8; display: flex; justify-content: space-between; gap: 8px; }
         .qa-item .qa-question { font-weight: 700; color: #0b1e3a; font-size: 0.85rem; margin-bottom: 4px; }
         .qa-item .qa-answer { color: #2a4a6a; font-size: 0.8rem; white-space: pre-line; word-break: break-word; }
-        .qa-item .qa-image {
-            max-width: 60px; max-height: 60px; border-radius: 10px; object-fit: cover; margin-top: 4px;
-            border: 1px solid #d8e6f8; cursor: pointer;
-        }
-        .qa-item .qa-actions { display: flex; gap: 4px; flex-shrink: 0; }
-        .qa-item .qa-actions button {
-            background: none; border: none; cursor: pointer; color: #5a7a9a; font-size: 0.9rem;
-            padding: 4px; border-radius: 8px; transition: 0.2s;
-        }
+        .qa-item .qa-image { max-width: 60px; max-height: 60px; border-radius: 10px; object-fit: cover; margin-top: 4px; border: 1px solid #d8e6f8; cursor: pointer; }
+        .qa-item .qa-actions button { background: none; border: none; cursor: pointer; color: #5a7a9a; font-size: 0.9rem; padding: 4px; border-radius: 8px; }
         .import-export-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .import-export-row .btn { flex: 1; min-width: 60px; }
         .main-content { flex: 1; min-width: 0; }
-        .header {
-            background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(20px);
-            border-radius: 32px; padding: 20px 22px 18px; margin-bottom: 24px;
-            box-shadow: 0 20px 40px rgba(0, 30, 70, 0.15), 0 0 0 1px rgba(0, 120, 255, 0.2);
-        }
+        .header { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(20px); border-radius: 32px; padding: 20px 22px 18px; margin-bottom: 24px; box-shadow: 0 20px 40px rgba(0, 30, 70, 0.15), 0 0 0 1px rgba(0, 120, 255, 0.2); }
         .header h1 { font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 12px; color: #0a2540; }
-        .header h1 i {
-            background: linear-gradient(135deg, #0066ff, #00c2ff); color: white; padding: 12px 15px;
-            border-radius: 40px; font-size: 1.5rem; box-shadow: 0 8px 18px rgba(0, 100, 255, 0.4);
-        }
-        .sub {
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
-            margin-top: 10px; font-size: 0.9rem; font-weight: 500; color: #1e3a5f;
-            background: rgba(255,255,255,0.3); border-radius: 40px; padding: 8px 16px;
-        }
-        .badge {
-            background: #ffaa33; color: #003a6b; padding: 5px 16px; border-radius: 30px;
-            font-weight: 700; font-size: 0.8rem; box-shadow: 0 4px 10px rgba(255, 170, 51, 0.5);
-        }
-        .search-wrap {
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border-radius: 60px;
-            padding: 6px 6px 6px 20px; display: flex; align-items: center; margin: 16px 0 8px;
-            box-shadow: 0 10px 25px rgba(0, 50, 100, 0.15);
-        }
-        .search-wrap input {
-            flex: 1; border: none; padding: 12px; font-size: 1rem; outline: none;
-            background: transparent; color: #0b1f33; font-weight: 500;
-        }
-        .search-wrap button {
-            background: linear-gradient(135deg, #0044cc, #0080ff); border: none; color: white;
-            padding: 9px 22px; border-radius: 40px; font-weight: 600; cursor: pointer;
-            transition: 0.25s; white-space: nowrap; box-shadow: 0 4px 12px rgba(0, 80, 255, 0.4);
-        }
+        .header h1 i { background: linear-gradient(135deg, #0066ff, #00c2ff); color: white; padding: 12px 15px; border-radius: 40px; font-size: 1.5rem; box-shadow: 0 8px 18px rgba(0, 100, 255, 0.4); }
+        .sub { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: 0.9rem; font-weight: 500; color: #1e3a5f; background: rgba(255,255,255,0.3); border-radius: 40px; padding: 8px 16px; }
+        .badge { background: #ffaa33; color: #003a6b; padding: 5px 16px; border-radius: 30px; font-weight: 700; font-size: 0.8rem; box-shadow: 0 4px 10px rgba(255, 170, 51, 0.5); }
+        .search-wrap { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border-radius: 60px; padding: 6px 6px 6px 20px; display: flex; align-items: center; margin: 16px 0 8px; box-shadow: 0 10px 25px rgba(0, 50, 100, 0.15); }
+        .search-wrap input { flex: 1; border: none; padding: 12px; font-size: 1rem; outline: none; background: transparent; color: #0b1f33; font-weight: 500; }
+        .search-wrap button { background: linear-gradient(135deg, #0044cc, #0080ff); border: none; color: white; padding: 9px 22px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: 0.25s; white-space: nowrap; box-shadow: 0 4px 12px rgba(0, 80, 255, 0.4); }
         .search-tip { font-size: 0.75rem; color: #3a6a9a; margin: -2px 0 4px 20px; display: flex; align-items: center; gap: 6px; }
-        .demand-suggest {
-            background: rgba(255,255,255,0.5); border-radius: 40px; padding: 8px 18px; margin-top: 10px;
-            font-size: 0.8rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-        }
-        .demand-suggest .tag {
-            background: white; border-radius: 30px; padding: 5px 16px; font-size: 0.75rem;
-            font-weight: 600; color: #0044aa; border: 1px solid #b8d2f0; cursor: pointer; transition: 0.2s;
-        }
-        .series-tabs {
-            display: flex; flex-wrap: wrap; gap: 10px 14px; margin: 24px 0 18px;
-            padding: 8px 0 14px; border-bottom: 1px solid rgba(180, 200, 220, 0.5);
-        }
-        .series-tabs span {
-            background: white; padding: 7px 20px; border-radius: 40px; font-size: 0.85rem;
-            font-weight: 600; color: #1a2c4a; box-shadow: 0 6px 14px rgba(0, 20, 50, 0.08);
-            border: 1px solid #cfdff0; cursor: pointer; transition: 0.2s;
-        }
-        .series-tabs span.active {
-            background: linear-gradient(135deg, #003c7e, #0a6ab0); color: white;
-            border-color: #003c7e; box-shadow: 0 10px 20px rgba(0, 50, 120, 0.3);
-        }
-        .product-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;
-        }
-        .product-card {
-            background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(18px); border-radius: 28px;
-            padding: 20px 20px 22px; box-shadow: 0 15px 35px rgba(0, 20, 60, 0.12), 0 0 0 1px rgba(255,255,255,0.9);
-            transition: transform 0.25s, box-shadow 0.3s; border: 1px solid rgba(255, 255, 255, 0.8);
-            display: flex; flex-direction: column; position: relative; overflow: hidden;
-        }
-        .card-badge {
-            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 12px;
-        }
-        .series-tag {
-            background: linear-gradient(135deg, #e3efff, #d3e5ff); color: #003c7e; font-weight: 700;
-            font-size: 0.7rem; padding: 5px 14px; border-radius: 30px; border: 1px solid #b4d2ff;
-        }
-        .commission {
-            background: linear-gradient(135deg, #d2f0d2, #b8e6b8); color: #0a5c1a; font-weight: 700;
-            font-size: 0.7rem; padding: 5px 14px; border-radius: 30px; border: 1px solid #a3d6a3;
-        }
+        .demand-suggest { background: rgba(255,255,255,0.5); border-radius: 40px; padding: 8px 18px; margin-top: 10px; font-size: 0.8rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .demand-suggest .tag { background: white; border-radius: 30px; padding: 5px 16px; font-size: 0.75rem; font-weight: 600; color: #0044aa; border: 1px solid #b8d2f0; cursor: pointer; transition: 0.2s; }
+        .series-tabs { display: flex; flex-wrap: wrap; gap: 10px 14px; margin: 24px 0 18px; padding: 8px 0 14px; border-bottom: 1px solid rgba(180, 200, 220, 0.5); }
+        .series-tabs span { background: white; padding: 7px 20px; border-radius: 40px; font-size: 0.85rem; font-weight: 600; color: #1a2c4a; box-shadow: 0 6px 14px rgba(0, 20, 50, 0.08); border: 1px solid #cfdff0; cursor: pointer; transition: 0.2s; }
+        .series-tabs span.active { background: linear-gradient(135deg, #003c7e, #0a6ab0); color: white; border-color: #003c7e; box-shadow: 0 10px 20px rgba(0, 50, 120, 0.3); }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+        .product-card { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(18px); border-radius: 28px; padding: 20px 20px 22px; box-shadow: 0 15px 35px rgba(0, 20, 60, 0.12); transition: transform 0.25s, box-shadow 0.3s; border: 1px solid rgba(255, 255, 255, 0.8); display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .product-card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 30px 50px rgba(0, 50, 120, 0.25), 0 0 0 1px rgba(0,160,255,0.6); }
+        .card-badge { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .series-tag { background: linear-gradient(135deg, #e3efff, #d3e5ff); color: #003c7e; font-weight: 700; font-size: 0.7rem; padding: 5px 14px; border-radius: 30px; border: 1px solid #b4d2ff; }
+        .commission { background: linear-gradient(135deg, #d2f0d2, #b8e6b8); color: #0a5c1a; font-weight: 700; font-size: 0.7rem; padding: 5px 14px; border-radius: 30px; border: 1px solid #a3d6a3; }
         .product-name { font-size: 1.25rem; font-weight: 700; color: #0b1e3a; margin: 8px 0 4px; }
-        .product-model {
-            font-size: 0.75rem; color: #2a5c8a; background: rgba(225, 240, 255, 0.8);
-            display: inline-block; padding: 3px 14px; border-radius: 20px; margin: 6px 0 12px; font-family: monospace;
-        }
-        .core-features {
-            background: rgba(250, 253, 255, 0.7); border-radius: 18px; padding: 14px 16px;
-            margin: 10px 0 16px; border-left: 5px solid #0080ff; font-size: 0.9rem;
-            color: #1d2f48; line-height: 1.6; flex: 1; white-space: pre-line;
-        }
-        .benefits-box {
-            background: linear-gradient(135deg, #f0f7ff, #e6f0ff); border-radius: 16px;
-            padding: 12px 14px; margin: 8px 0 12px; font-size: 0.8rem; color: #1e3a5f;
-            border: 1px solid #c8ddf5; display: flex; flex-wrap: wrap; gap: 12px;
-        }
-        .benefit-item {
-            display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.7);
-            padding: 4px 10px; border-radius: 20px; font-weight: 500;
-        }
-        .link-sku {
-            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-            gap: 10px; margin-top: 8px; border-top: 1px solid rgba(200, 215, 235, 0.7); padding-top: 16px;
-        }
-        .link-sku a, .copy-btn {
-            color: #003c7e; text-decoration: none; font-weight: 600; font-size: 0.85rem;
-            display: inline-flex; align-items: center; gap: 6px;
-            background: linear-gradient(135deg, #eef4ff, #dceaff); padding: 6px 18px 6px 14px;
-            border-radius: 40px; transition: 0.2s; border: 1px solid #b8d2ff; cursor: pointer; white-space: nowrap;
-        }
-        .sku-code {
-            font-size: 0.7rem; color: #3c5a7a; background: rgba(240, 245, 250, 0.9);
-            padding: 3px 14px; border-radius: 30px; font-family: monospace; border: 1px solid #d0e0f0;
-        }
-        .no-result {
-            grid-column: 1 / -1; text-align: center; padding: 70px 20px;
-            background: rgba(255, 255, 255, 0.6); border-radius: 40px; color: #2a4a6a; font-weight: 500;
-        }
-        .footer-note {
-            margin-top: 36px; font-size: 0.8rem; color: #4a6080; text-align: center;
-            border-top: 1px solid rgba(180, 200, 220, 0.6); padding-top: 26px;
-        }
-        .image-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
-            display: flex; align-items: center; justify-content: center; z-index: 9999;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s;
-        }
+        .product-model { font-size: 0.75rem; color: #2a5c8a; background: rgba(225, 240, 255, 0.8); display: inline-block; padding: 3px 14px; border-radius: 20px; margin: 6px 0 12px; font-family: monospace; }
+        .core-features { background: rgba(250, 253, 255, 0.7); border-radius: 18px; padding: 14px 16px; margin: 10px 0 16px; border-left: 5px solid #0080ff; font-size: 0.9rem; color: #1d2f48; line-height: 1.6; flex: 1; white-space: pre-line; }
+        .benefits-box { background: linear-gradient(135deg, #f0f7ff, #e6f0ff); border-radius: 16px; padding: 12px 14px; margin: 8px 0 12px; font-size: 0.8rem; color: #1e3a5f; border: 1px solid #c8ddf5; display: flex; flex-wrap: wrap; gap: 12px; }
+        .benefit-item { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.7); padding: 4px 10px; border-radius: 20px; font-weight: 500; }
+        .link-sku { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; border-top: 1px solid rgba(200, 215, 235, 0.7); padding-top: 16px; }
+        .link-sku a, .copy-btn { color: #003c7e; text-decoration: none; font-weight: 600; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #eef4ff, #dceaff); padding: 6px 18px 6px 14px; border-radius: 40px; transition: 0.2s; border: 1px solid #b8d2ff; cursor: pointer; white-space: nowrap; }
+        .sku-code { font-size: 0.7rem; color: #3c5a7a; background: rgba(240, 245, 250, 0.9); padding: 3px 14px; border-radius: 30px; font-family: monospace; border: 1px solid #d0e0f0; }
+        .no-result { grid-column: 1 / -1; text-align: center; padding: 70px 20px; background: rgba(255, 255, 255, 0.6); border-radius: 40px; color: #2a4a6a; font-weight: 500; }
+        .footer-note { margin-top: 36px; font-size: 0.8rem; color: #4a6080; text-align: center; border-top: 1px solid rgba(180, 200, 220, 0.6); padding-top: 26px; }
+        .image-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .image-modal.active { opacity: 1; pointer-events: auto; }
-        .image-modal img {
-            max-width: 90%; max-height: 90%; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-            cursor: zoom-out;
-        }
-        .image-modal-close {
-            position: absolute; top: 20px; right: 30px; font-size: 2.5rem; color: white; cursor: pointer;
-            background: none; border: none; transition: 0.2s;
-        }
-        @media (max-width: 900px) {
-            .layout { flex-direction: column; }
-            .sidebar { flex: 1; position: static; max-height: none; width: 100%; }
-        }
-        @media (max-width: 500px) {
-            .product-grid { grid-template-columns: 1fr; }
-            .header h1 { font-size: 1.6rem; }
-        }
+        .image-modal img { max-width: 90%; max-height: 90%; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); cursor: zoom-out; }
+        .image-modal-close { position: absolute; top: 20px; right: 30px; font-size: 2.5rem; color: white; cursor: pointer; background: none; border: none; }
+        @media (max-width: 900px) { .layout { flex-direction: column; } .sidebar { flex: 1; position: static; max-height: none; width: 100%; } }
+        @media (max-width: 500px) { .product-grid { grid-template-columns: 1fr; } .header h1 { font-size: 1.6rem; } }
     </style>
 </head>
 <body>
@@ -314,7 +150,7 @@
         <div id="productGrid" class="product-grid"></div>
 
         <div class="footer-note">
-            <i class="fas fa-circle-info"></i> 数据基于真实合作 SKU · 点击链接跳转京东核对 · 支持多需求同时满足搜索 · 包含站外种草及团长权益 · 自定义话术及图片自动保存在本地浏览器，刷新不丢失
+            <i class="fas fa-circle-info"></i> 数据基于真实合作 SKU · 点击链接跳转京东核对 · 支持多需求同时满足搜索 · 包含站外种草及团长权益 · 自定义话术及图片自动保存在本地浏览器
         </div>
     </div>
 </div>
@@ -326,14 +162,56 @@
 
 <script>
     (function() {
+        // ================= 完整海尔空调产品数据 =================
         const products = [
+            // 净省电系列
             { series: "净省电", name: "海尔净省电二代pro 大1.5匹挂机", model: "KFR-35GW/E1-1U", features: "双AI人感控风 制冷省电53% 上下出风不吹人 一键AI省电 风避人吹 无人自动关机 APF值5.4", link: "https://u.jd.com/krnwHNf", sku: "100321527184", commission: "3%", seed: "50元", leader: "30元", cross: "两件96折，三件94折" },
             { series: "净省电", name: "海尔净省电二代pro 大1匹挂机", model: "KFR-26GW/E1-1U", features: "双AI人感控风 制冷省电48% 上下出风不吹人 一键AI省电 风避人吹 无人自动关机 APF值5.4", link: "https://u.jd.com/kGnsHjJ", sku: "100240955915", commission: "3%", seed: "50元", leader: "30元", cross: "两件96折，三件94折" },
+            { series: "净省电", name: "海尔净省电Pro 大1.5匹挂机", model: "KFR-35GW/E1-1Pro", features: "双极离子除菌 能效比6.1 超一级能效 APF值6.10 双极离子除菌", link: "https://u.jd.com/krnGYuk", sku: "100154313118", commission: "4%", seed: "50元", leader: "30元", cross: "两件96折，三件94折" },
+            { series: "净省电", name: "海尔净省电 大1.5匹挂机", model: "KFR-35GW/E1-1", features: "制冷省电38% 十年省电2300元 上下出风不吹人 一键AI省电 16分贝静音 APF值5.34", link: "https://u.jd.com/krn1vSP", sku: "100146042265", commission: "3%", seed: "50元", leader: "", cross: "两件96折，三件94折" },
+            { series: "净省电", name: "海尔净省电 大1匹挂机", model: "KFR-26GW/E1-1", features: "省电提升54% 十年省电3300元 上下出风不吹人 一键AI省电 16分贝静音 APF值5.5", link: "https://u.jd.com/kGntEs8", sku: "100146042249", commission: "3%", seed: "50元", leader: "30元", cross: "两件96折，三件94折" },
+            { series: "净省电", name: "海尔净省电 2匹大挂机", model: "KFR-46GW/E1-1", features: "强劲大风量 省空间更省电 制冷导板上扬5°，制热导板下压75° 双排冷凝器 一键AI省电", link: "https://u.jd.com/kOnCX1w", sku: "100252111719", commission: "3%", seed: "50元", leader: "", cross: "两件96折，三件94折" },
+            { series: "净省电", name: "海尔净省电 2匹大挂机", model: "KFR-48GW/E1-1", features: "强劲大风量 省空间更省电 制冷导板上扬5°，制热导板下压75° 双排冷凝器 一键AI省电", link: "https://u.jd.com/kOn1Tt3", sku: "100193084952", commission: "3%", seed: "50元", leader: "", cross: "两件96折，三件94折" },
+            { series: "净省电", name: "海尔净省电 3匹大挂机", model: "KFR-72GW/E1-1", features: "强劲大风量 大客厅省空间更省电 1410m³/h大风量 内外机自清洁 省电提升37% 15秒速冷", link: "https://u.jd.com/kanwYtY", sku: "100330698754", commission: "3%", seed: "50元", leader: "", cross: "两件96折，三件94折" },
+            { series: "净省电", name: "海尔净省电 大3匹柜机", model: "KFR-72LW/E1-1", features: "AI省电算法 制冷省电42% 超一级APF值4.8，1600m³/h循环风量，90°广角送风，12米长距离送风，内外机自清洁", link: "https://u.jd.com/kr2hwM0", sku: "100187484160", commission: "5%", seed: "50元", leader: "50元", cross: "两件96折，三件94折" },
+            { series: "净省电", name: "海尔净省电 2匹柜机", model: "KFR-50LW/E1-1", features: "AI省电算法 制冷省电37% 超一级APF值4.85，1410m³/h循环风量，90°广角送风", link: "https://u.jd.com/k1nIqnt", sku: "100148775193", commission: "5%", seed: "50元", leader: "", cross: "两件96折，三件94折" },
+            { series: "净省电", name: "海尔净省电plus 大1.5匹挂机", model: "KFR-35GW/E1-1Plus", features: "双排冷凝器 能效比6.12", link: "https://u.jd.com/k6nK4Wy", sku: "100187484138", commission: "4%", seed: "50元", leader: "30元", cross: "两件96折，三件94折" },
+            { series: "净省电", name: "海尔净省电plus 大3匹柜机", model: "KFR-72LW/E1-1Plus", features: "wifi人感防直吹 双极离子除菌 超一级APF值5.2，1750m³/h循环风量，90°广角送风，wifi人感防直吹 双极离子除菌", link: "https://u.jd.com/kGnCwQu", sku: "100205567930", commission: "5%", seed: "50元", leader: "50元", cross: "两件96折，三件94折" },
+            // 舒适风系列
             { series: "舒适风", name: "海尔舒适风 大1.5匹挂机", model: "KFR-35GW/E2-1", features: "人感控风不吹人 全域送风人 双翼分区送风 风避人吹 无人自动关机 APF值5.4", link: "https://u.jd.com/krnw31Y", sku: "100210049553", commission: "6%", seed: "50元", leader: "50元", cross: "两件96折，三件94折" },
-            { series: "卡萨帝", name: "卡萨帝星云挂机·冰雪白 新一级能效变频卧室挂机 复合舒适风", model: "CAS3516BAC(81)U1", features: "您点链接右上角点 打开app 跳转到京东app，核实一下是这款吗？ CAS3516BAC(81)U1丨星云挂机·冰雪白 【智能联网，操作更便捷】手机下载海尔智家APP绑定空调后，可随时远程开关调温...", link: "https://u.jd.com/kGYXBIg", sku: "100092721846", commission: "5%", seed: "", leader: "", cross: "" },
-            { series: "统帅", name: "统帅超省电max+", model: "KFR-35GW/LTB2-1", features: "双排纯铜管，15S制冷，一年省电347度，AI省电，柔风防直吹", link: "https://u.jd.com/kOna41a", sku: "100325231846", commission: "1.60%", seed: "", leader: "", cross: "" }
+            { series: "舒适风", name: "海尔舒适风Pro 大1.5匹挂机", model: "KFR-35GW/E2-1pro", features: "双排冷凝器 人感控风不吹人 全域送风 双翼分区送风 风避人吹 无人自动关机 APF值5.8 800m³/h大风量", link: "https://u.jd.com/krnIzkm", sku: "100226608155", commission: "6%", seed: "50元", leader: "50元", cross: "两件96折，三件94折" },
+            { series: "舒适风", name: "海尔舒适风 2匹大挂机", model: "KFR-46GW/E2-1", features: "客厅省空间 人感控风不吹人 全域送风 双翼分区送风 风避人吹 无人自动关机 APF值4.81 900m³/h大风量", link: "https://u.jd.com/kOnLxtJ", sku: "100247828645", commission: "6%", seed: "50元", leader: "", cross: "两件96折，三件94折" },
+            { series: "舒适风", name: "海尔舒适风 大3匹柜机", model: "KFR-72LW/E2-1", features: "AI人感控风 12米长距离送风 玻璃面板外观，超一级APF值4.75，1820m³/h循环风量，12米送风距离，130°广角送风 双极离子除菌 四风口分区送风、AI之眼、AI智清洁、AI温湿精控", link: "https://u.jd.com/kGnGoO7", sku: "100210049551", commission: "8%", seed: "50元", leader: "50元", cross: "两件96折，三件94折" },
+            { series: "舒适风", name: "海尔舒适风Pro 大3匹柜机", model: "KFR-72LW/E2-1pro", features: "AI人感控风 智能离线语音控制 玻璃面板外观，超一级APF值5.25，1850m³/h循环风量，12米远距离送风，四风口分区送风 AI离线语音控制 AI温湿精控", link: "https://u.jd.com/ka2m7WH", sku: "100226608157", commission: "8%", seed: "50元", leader: "50元", cross: "两件96折，三件94折" },
+            // 洗空气系列
+            { series: "洗空气", name: "海尔洗空气 大1.5匹挂机", model: "KFR-35GW/E3-1", features: "千万级负离子除菌 原创离子洗空气科技 双风口送风", link: "https://u.jd.com/kanzwXo", sku: "100213881568", commission: "3%", seed: "50元", leader: "", cross: "两件96折，三件94折" },
+            { series: "洗空气", name: "海尔洗空气舒享款 大3匹柜机", model: "KFR-72LW/E3-1", features: "千万级负离子除菌降尘 APF值4.56，1510m³/h大循环风量，自清洁任意洗，千万级负离子除菌降尘、一键防直吹", link: "https://u.jd.com/k6naiPL", sku: "100166812343", commission: "5%", seed: "50元", leader: "", cross: "两件96折，三件94折" },
+            { series: "洗空气", name: "海尔洗空气Pro 大1.5匹挂机", model: "KFR-35GW/E3-1pro", features: "上亿级负离子除菌 AI离子洗空气科技 还原自然好空气", link: "https://u.jd.com/kgniCKo", sku: "100216054486", commission: "4%", seed: "50元", leader: "", cross: "两件96折，三件94折" },
+            { series: "洗空气", name: "海尔洗空气Pro 大3匹柜机", model: "KFR-72LW/E3-1pro", features: "亿级负离子除菌 一级能效APF值4.63，1700m³/h大循环风量，9m远距离送风，135°广角送风，亿级负离子除菌降尘、一键防直吹、AI温湿精控、双驱环抱送风、出风口离地960mm", link: "https://u.jd.com/k6n1f2r", sku: "100216054450", commission: "5%", seed: "50元", leader: "", cross: "两件96折，三件94折" },
+            { series: "洗空气", name: "海尔洗空气Max 大1.5匹挂机", model: "KFR-35GW/E3-1Max", features: "语音智控 上亿级负离子除菌 WiFi人感防直吹 AI智慧语音 AI洗空气科技", link: "/", sku: "100229433064", commission: "", seed: "50元", leader: "", cross: "两件96折，三件94折" },
+            { series: "洗空气", name: "海尔洗空气Max 大3匹柜机", model: "KFR-72LW/E3-1MAX", features: "亿级负离子除菌 一级能效APF值4.63，1700m³/h大循环风量，亿级负离子除菌降尘、一键防直吹、AI温湿精控、AI人感控风、AI离线智慧语音、双驱环抱送风、出风口离地960mm", link: "https://u.jd.com/kgnsB1Y", sku: "100216054470", commission: "5%", seed: "50元", leader: "", cross: "两件96折，三件94折" },
+            // 卡萨帝系列
+            { series: "卡萨帝", name: "卡萨帝揽光星悦版 大1.5匹挂机", model: "CAS3530FCC(81)U1", features: "母婴级净护，守护每次呼吸 母婴级净护 内外机多维净化 双路送风 全屋送风无死角 100%双排全铜", link: "https://u.jd.com/kgnurZh", sku: "100212798318", commission: "6%", seed: "", leader: "", cross: "" },
+            { series: "卡萨帝", name: "卡萨帝星云 2匹挂机", model: "CAS5016BAB(81)U1", features: "2匹大风量，省空间不占地 省空间不占地 复合软风 990m3/h大风量 智慧除湿", link: "https://u.jd.com/kOnK3UK", sku: "100281641060", commission: "6%", seed: "", leader: "", cross: "" },
+            { series: "卡萨帝", name: "卡萨帝星悦原石套系 大1.5匹挂机", model: "CAS3531F20J(81)U1", features: "AI软风 衡温更舒适 双向衡温送风 母婴级净化 双排全铜管", link: "https://u.jd.com/kDnQKsR", sku: "100240896271", commission: "6%", seed: "", leader: "", cross: "" },
+            { series: "卡萨帝", name: "卡萨帝星悦系列 原石套系 大3匹柜机", model: "CAP7231F20(81)U1", features: "UWB人感雷达 随身风 母婴级守护 高温强冷 双排全铜", link: "https://u.jd.com/kDnQG2t", sku: "100321449146", commission: "6%", seed: "", leader: "", cross: "" },
+            { series: "卡萨帝", name: "卡萨帝星云挂机·冰雪白 新一级能效变频卧室挂机 复合舒适风", model: "CAS3516BAC(81)U1", features: "CAS3516BAC(81)U1丨星云挂机·冰雪白 【智能联网，操作更便捷】手机下载海尔智家APP绑定空调后，可随时远程开关调温，人在回家路上可提前打开空调，到家就是舒适的温度。【适用面积】制热16-20㎡，制冷16-24㎡ 【外观】创新三棱镜结构外观，美观又实用 【舒适】创新双导翼设计，上翼导风，下翼匀风，出风更柔和，凉而不冷暖而不燥 【健康】56℃除菌自清洁，一键结霜化霜，30min高温清洗内机蒸发器，出风更洁净 【恒温除湿】根据环境需求有效调节压缩机频率、风机转速等，除湿不过度降温，体感更舒适", link: "https://u.jd.com/kGYXBIg", sku: "100092721846", commission: "5%", seed: "", leader: "", cross: "" },
+            { series: "卡萨帝", name: "卡萨帝星云挂机 新一级能效挂机 内外机双排纯铜管", model: "CAS3523FCA(81)VU1", features: " 【智能联网，操作更便捷】手机下载海尔智家APP绑定空调后，可随时远程开关调温，人在回家路上可提前打开空调，到家就是舒适的温度。【适用面积】制热16-20㎡，制冷16-24㎡ 【双向衡温送风】水平、垂直两路风向，平衡室内温度，全屋衡温舒适 【健康】UVC Pro除菌、56℃除菌自清洁，守护家人健康 【语音】离在线语音识别，联网资源更丰富，智慧便捷", link: "https://u.jd.com/kOY53l1", sku: "100114778409", commission: "8%", seed: "", leader: "", cross: "" },
+            // 家中机系列
+            { series: "家中机", name: "海尔中央空调云舒 3匹风管机", model: "KFRd-72NW/72ECD81", features: "三菱压缩机、温湿双控 18cm超薄内机、15s速冷30s速热、赠20w爱家漏水险", link: "https://u.jd.com/kDnC5K7", sku: "100052303743", commission: "3%", seed: "", leader: "", cross: "" },
+            { series: "家中机", name: "海尔中央空调云舒领航 大3匹风管机", model: "KFRd-75NW/78EL81PU1", features: "长效四季除甲醛 18cm超薄内机、15s速冷30s速热、赠20w爱家漏水险", link: "https://u.jd.com/kanKPzR", sku: "100160506324", commission: "3%", seed: "", leader: "", cross: "" },
+            { series: "家中机", name: "海尔云舒活力版 3匹风管机一拖一", model: "KFRd-72NW/7DEPZ81U1", features: "急速冷暖，内机18cm超薄 全直流变频科技 APF4.10全年省电 内外机自清洁 15秒速冷、赠20w爱家漏水险", link: "https://u.jd.com/k6nwDQ5", sku: "100244498526", commission: "2%", seed: "", leader: "", cross: "" },
+            { series: "家中机", name: "海尔中央空调净省电Plus 3匹风管机", model: "KFRd-75NW/7CEQZ81U1", features: "全年省电率41%，智慧除湿 18cm超薄内机、15s速冷30s速热、赠20w爱家漏水险", link: "https://u.jd.com/k1nLlLW", sku: "100268919670", commission: "3%", seed: "", leader: "", cross: "" },
+            { series: "家中机", name: "统帅风管机一拖一超省电Pro 3匹", model: "KFRd-75NW/74EY81TU1", features: "全年省电849度。全年省电率达25% 18cm超薄内机、15s速冷30s速热、赠20w爱家漏水险", link: "https://u.jd.com/k6nIHjj", sku: "100227342816", commission: "3%", seed: "", leader: "", cross: "" },
+            { series: "家中机", name: "海尔风管机 大3匹云璟Ultra", model: "KFRd-75NW/60FA81U1", features: "APF5.01、智慧除湿 18cm超薄内机、15s速冷30s速热、赠20w爱家漏水险", link: "https://u.jd.com/kDnqjK4", sku: "100328687460", commission: "10%", seed: "", leader: "", cross: "" },
+            { series: "家中机", name: "中央空调 统帅5匹天花机", model: "KFRd-120QW/5YTD82T", features: "三菱压缩机 动力强劲，澎湃风量 节能省电", link: "https://u.jd.com/k6nuj0W", sku: "100282479038", commission: "3%", seed: "", leader: "", cross: "" },
+            { series: "家中机", name: "中央空调5匹变频空调柜机 立柜式 380V", model: "KFRd-120LW/7YAF81", features: "三菱压缩机 动力强劲，澎湃风量 节能省电", link: "https://u.jd.com/kanMCvq", sku: "100093541137", commission: "3%", seed: "", leader: "", cross: "" },
+            // 统帅系列
+            { series: "统帅", name: "统帅超省电max+", model: "KFR-35GW/LTB2-1", features: "双排纯铜管，15S制冷，一年省电347度，AI省电，柔风防直吹", link: "https://u.jd.com/kOna41a", sku: "100325231846", commission: "1.60%", seed: "", leader: "", cross: "" },
+            { series: "统帅", name: "统帅超省电Air", model: "KFR-72LW/LTA1-1", features: "双排纯铜管，一键超省电", link: "https://u.jd.com/k6nyele", sku: "100310724832", commission: "1.10%", seed: "", leader: "", cross: "" }
         ];
 
+        // ================= DOM元素 =================
         const grid = document.getElementById('productGrid');
         const searchInput = document.getElementById('searchInput');
         const clearBtn = document.getElementById('clearSearchBtn');
@@ -361,14 +239,14 @@
         let currentSearch = '';
         let pendingImageData = null;
 
-        // 大图模态框
+        // ================= 大图模态框 =================
         function openModal(src) { modalImage.src = src; imageModal.classList.add('active'); }
         function closeModal() { imageModal.classList.remove('active'); modalImage.src = ''; }
         modalClose.addEventListener('click', closeModal);
         imageModal.addEventListener('click', (e) => { if (e.target === imageModal) closeModal(); });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && imageModal.classList.contains('active')) closeModal(); });
 
-        // 侧边栏折叠
+        // ================= 侧边栏折叠 =================
         toggleSidebar.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
             const collapsed = sidebar.classList.contains('collapsed');
@@ -376,7 +254,7 @@
             localStorage.setItem('haier_sidebar_collapsed', collapsed ? '1' : '0');
         });
 
-        // 图片上传
+        // ================= 图片上传 =================
         imageUploadBtn.addEventListener('click', () => imageFileInput.click());
         imageFileInput.addEventListener('change', (e) => {
             const file = e.target.files[0]; if (!file) return;
@@ -386,7 +264,7 @@
         });
         removeImageBtn.addEventListener('click', () => { pendingImageData = null; imagePreview.src=''; imagePreview.style.display='none'; removeImageBtn.style.display='none'; });
 
-        // 自动本地存储话术库
+        // ================= 话术库自动本地存储 =================
         const STORAGE_KEY = 'haier_custom_qa_auto_v1';
         function getCustomQa() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; } }
         function setCustomQa(qaArray) { localStorage.setItem(STORAGE_KEY, JSON.stringify(qaArray)); renderCustomQa(); }
@@ -427,7 +305,7 @@
             reader.readAsText(file);
         }
 
-        // 产品搜索渲染
+        // ================= 产品搜索渲染 =================
         const demandKeywords = { "省电": ["省电","节能","AI省电","超省电","能效","省电率"], "不直吹": ["不直吹","防直吹","风避人","人感控风","AI人感","柔风"], "除菌": ["除菌","除甲醛","净化","离子","母婴","净护","UVC"], "儿童房": ["儿童","母婴","防直吹","柔风","静音","低噪"], "大客厅": ["大3匹","3匹","柜机","大风量","长距离","广角","大挂机"], "静音": ["静音","16分贝","低噪","安静","轻音"], "自清洁": ["自清洁","智清洁","任意洗","56℃","结霜化霜"], "智能控制": ["智能","语音","wifi","离线语音","AI智控","人感","APP"], "性价比": ["统帅","超省电","性价比","风管机","一拖一","实惠"] };
         function parseSearchTerms(q) { if(!q.trim()) return []; return q.replace(/[、，,;；\s]+/g,' ').trim().toLowerCase().split(' ').filter(t=>t); }
         function doesMatchAll(p, terms) { const n=p.name.toLowerCase(), m=p.model.toLowerCase(), f=p.features.toLowerCase(), s=p.sku.toLowerCase(); return terms.every(term => { if(n.includes(term)||m.includes(term)||f.includes(term)||s.includes(term)) return true; for(const [demand,kws] of Object.entries(demandKeywords)){ if(demand.toLowerCase().includes(term)||term.includes(demand.toLowerCase())||kws.some(k=>term.includes(k.toLowerCase()))){ if(kws.some(k=>f.includes(k.toLowerCase())||n.includes(k.toLowerCase()))) return true; } } return false; }); }
@@ -444,14 +322,14 @@
         clearBtn.addEventListener('click', ()=>{ searchInput.value=''; currentSearch=''; renderProducts(); });
         demandTags.addEventListener('click', e=>{ const tag=e.target.closest('.tag'); if(tag){ searchInput.value=tag.dataset.demand; currentSearch=tag.dataset.demand; renderProducts(); } });
 
-        // 事件绑定
+        // ================= 事件绑定 =================
         addQaBtn.addEventListener('click', addCustomQa);
         exportBtn.addEventListener('click', exportCustomQa);
         importBtn.addEventListener('click', ()=>importFile.click());
         importFile.addEventListener('change', e=>{ if(e.target.files[0]) importCustomQa(e.target.files[0]); e.target.value=''; });
         qaSearchInput.addEventListener('input', renderCustomQa);
 
-        // 初始化：自动恢复侧边栏状态 & 渲染存储内容
+        // ================= 初始化 =================
         if (localStorage.getItem('haier_sidebar_collapsed') === '1') {
             sidebar.classList.add('collapsed');
             toggleSidebar.innerHTML = '<i class="fas fa-chevron-right"></i> 展开';
